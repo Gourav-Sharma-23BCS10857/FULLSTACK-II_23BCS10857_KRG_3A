@@ -1,6 +1,39 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchLogs } from '../store/logSlice';
 
 const DashboardAnalytics = () => {
+  const dispatch = useDispatch();
+  const { data: logs, status } = useSelector((state) => state.logs);
+
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchLogs());
+    }
+  }, [status, dispatch]);
+
+  // Calculate analytics from logs
+  const totalCarbon = logs.reduce((sum, log) => sum + log.carbon, 0);
+  
+  // Find most impactful activity
+  const topEmissionSource = logs.length > 0 
+    ? logs.reduce((max, log) => log.carbon > max.carbon ? log : max, logs[0])
+    : null;
+
+  // Calculate average carbon per activity
+  const avgCarbon = logs.length > 0 ? (totalCarbon / logs.length).toFixed(1) : 0;
+
+  // Count high vs low carbon activities
+  const highCarbonCount = logs.filter(log => log.carbon > 4).length;
+  const lowCarbonCount = logs.filter(log => log.carbon <= 4).length;
+  const lowCarbonPercentage = logs.length > 0 
+    ? Math.round((lowCarbonCount / logs.length) * 100) 
+    : 0;
+
+  if (status === 'loading') {
+    return <div style={{ padding: "20px", textAlign: "center" }}>🔄 Loading data...</div>;
+  }
+
   return (
     <div style={{ padding: "20px" }}>
       <h1>Dashboard Analytics</h1>
@@ -8,23 +41,23 @@ const DashboardAnalytics = () => {
 
       <div style={{ marginTop: "20px", display: "grid", gap: "15px" }}>
         <div style={cardStyle}>
-          <h3>Weekly CO₂ Trend</h3>
-          <p>📉 Reduced by 8% this week</p>
+          <h3>Average Carbon per Activity</h3>
+          <p>📊 {avgCarbon} kg CO₂</p>
         </div>
 
         <div style={cardStyle}>
-          <h3>Most Used Transport</h3>
-          <p>🚗 Car (62%)</p>
+          <h3>Low Carbon Activities</h3>
+          <p>🌱 {lowCarbonPercentage}% of total</p>
         </div>
 
         <div style={cardStyle}>
           <h3>Top Emission Source</h3>
-          <p>⚡ Electricity (45%)</p>
+          <p>⚡ {topEmissionSource ? `${topEmissionSource.activity} (${topEmissionSource.carbon} kg)` : 'No data'}</p>
         </div>
 
         <div style={cardStyle}>
           <h3>Suggested Action</h3>
-          <p>✅ Use public transport 2 days/week</p>
+          <p>✅ {highCarbonCount > 0 ? 'Reduce high carbon activities' : 'Keep up the good work!'}</p>
         </div>
       </div>
     </div>

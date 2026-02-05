@@ -1,16 +1,16 @@
-import{Link,Outlet} from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 
-const DashboardLayout=()=>{
-    return(
-        <div style={{padding:"1rem"}}>
-           <h3>Dashboard</h3> 
+const DashboardLayout = () => {
+    return (
+        <div style={{ padding: "1rem" }}>
+            <h3>Dashboard</h3>
             
-              <nav>
+            <nav>
                 <Link to="summary">summary</Link> |{" "}
-                <Link to="analytics">analytics</Link> 
-              </nav>
-              <hr/>
-              <Outlet/>
+                <Link to="analytics">analytics</Link>
+            </nav>
+            <hr />
+            <Outlet />
         </div>
     );
 }

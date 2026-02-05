@@ -5,11 +5,27 @@ export const fetchLogs = createAsyncThunk(
   async () => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    return [
-      { id: 1, activity: "Car Travel", carbon: 4 },
-      { id: 2, activity: "Electricity Usage", carbon: 6 },
-      { id: 3, activity: "Cycling", carbon: 0 },
+    // Generate dynamic data on each fetch to show refresh is working
+    const baseActivities = [
+      { activity: "Car Travel", baseCarbon: 4 },
+      { activity: "Electricity Usage", baseCarbon: 6 },
+      { activity: "Cycling", baseCarbon: 0 },
+      { activity: "Public Transport", baseCarbon: 2 },
+      { activity: "Walking", baseCarbon: 0 },
     ];
+
+    // Randomly select 3-5 activities and add some variation to carbon values
+    const numActivities = Math.floor(Math.random() * 3) + 3; // 3-5 activities
+    const selectedActivities = baseActivities
+      .sort(() => Math.random() - 0.5)
+      .slice(0, numActivities)
+      .map((item, index) => ({
+        id: index + 1,
+        activity: item.activity,
+        carbon: Math.max(0, item.baseCarbon + Math.floor(Math.random() * 3) - 1), // ±1 variation
+      }));
+
+    return selectedActivities;
   }
 );
 

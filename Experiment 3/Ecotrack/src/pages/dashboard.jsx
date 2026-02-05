@@ -16,6 +16,10 @@ const Dashboard = () => {
         dispatch(fetchLogs());
     };
 
+    if (status === 'loading') {
+        return <div style={{ padding: '1rem', textAlign: 'center' }}>🔄 Loading data...</div>;
+    }
+
     // Calculate totals
     const totalActivities = logs.reduce((acc, log) => {
         acc[log.activity] = (acc[log.activity] || 0) + log.carbon;
